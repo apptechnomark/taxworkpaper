@@ -37,7 +37,7 @@ const Automation = () => {
     const maxsize = 200 * 1024 * 1024;
     if (e.target.files[0]?.size > maxsize) {
       setFileError(true);
-      setFileErrorMsg("Please select file less than 20 mb");
+      setFileErrorMsg("Please select file less than 200 mb");
     } else if (!e.target.files[0]?.name.endsWith(".zip")) {
       setFileError(true);
       setFileErrorMsg("Only zip file is valid");
