@@ -32,28 +32,31 @@ const Automation = () => {
       const filename = e.target.files[0].name;
       setImages(filename);
       setCreateObjectURL(URL.createObjectURL(i));
-      setDisabled(false);
+      setUploadBtn(true);
     }
     const maxsize = 200 * 1024 * 1024;
     if (e.target.files[0]?.size > maxsize) {
       setFileError(true);
       setFileErrorMsg("Please select file less than 200 mb");
+      setUploadBtn(false);
     } else if (!e.target.files[0]?.name.endsWith(".zip")) {
       setFileError(true);
       setFileErrorMsg("Only zip file is valid");
+      setUploadBtn(false);
     } else {
       setFileError(false);
+      setUploadBtn(true);
     }
+    setDownloadBtn(false);
   };
 
-  const handelDownload = async () => {
-    document.getElementById("downloadClick")?.click();
-    toast.success("File automatic start downloading...!!!", toastOptions)
-  };
+  // const handelDownload = async () => {
+  //   // document.getElementById("downloadClick")?.click();
+  //   toast.success("File automatic start downloading...!!!", toastOptions)
+  // };
 
   const handleUpload = async (e: any) => {
     e.preventDefault();
-    setDownloadBtn(false);
     setDisabled(true);
     const body = new FormData();
     body.append("file", image);
@@ -64,14 +67,16 @@ const Automation = () => {
       );
       if (response.status === 200) {
         toast.success(response.data.message, toastOptions);
-        setDownloadBtn(true);
         const fileName = images;
         const name = fileName.substring(0, fileName?.indexOf("."));
         console.log("name", name);
         setDownloadUrl(
           `https://apiuattaxworkpaper.pacificabs.com:5000/download_pdf?file_name=${name}`
         );
-        handelDownload();
+        setDownloadBtn(true);
+        setUploadBtn(false);
+
+        // handelDownload();
       } else {
         toast.error(response.data.message, toastOptions);
       }
@@ -79,7 +84,6 @@ const Automation = () => {
       toast.error(error.message, toastOptions);
     }
     setDisabled(false);
-    setUploadBtn(false);
   };
 
   return (
@@ -139,15 +143,15 @@ const Automation = () => {
                     </p>
                   )}
                 </th>
-                <td className="px-6 py-4">
+                <td className="flex px-6 py-4 gap-[15px] justify-center">
                   <button
-                    className={`flex gap-[15px] bg-[#1492c8] text-white text-sm font-semibold px-4 py-2 mx-auto ${
-                      disabled || uploadBtn || fileError
+                    className={`flex gap-[15px] bg-[#1492c8] text-white text-sm font-semibold px-4 py-2 ${
+                      disabled || fileError || !uploadBtn
                         ? "cursor-not-allowed opacity-50"
                         : ""
                     }`}
                     onClick={
-                      disabled || uploadBtn || fileError
+                      disabled || !uploadBtn || fileError
                         ? undefined
                         : handleUpload
                     }
@@ -163,8 +167,8 @@ const Automation = () => {
                   </button>
                   <a
                     id="downloadClick"
-                    href={downloadUrl}
-                    className={`hidden flex gap-[15px] bg-[#259916] text-white text-sm font-semibold px-4 py-2 mx-auto ${
+                    href={downloadBtn ? downloadUrl : "javascript:void(0);"}
+                    className={`flex gap-[15px] bg-[#259916] text-white text-sm font-semibold px-4 py-2 ${
                       downloadBtn ? "" : "cursor-not-allowed opacity-50"
                     }`}
                   >
