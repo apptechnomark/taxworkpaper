@@ -66,7 +66,6 @@ const Automation = () => {
         toast.success(response.data.message, toastOptions);
         const fileName = images;
         const name = fileName.substring(0, fileName?.indexOf("."));
-        console.log("name", name);
         setDownloadUrl(
           `https://apiuattaxworkpaper.pacificabs.com:5000/download_pdf?file_name=${name}`
         );

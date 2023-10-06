@@ -27,6 +27,28 @@ const Schd = () => {
   const [createObjectURL, setCreateObjectURL] = useState("");
   const [fileError, setFileError] = useState(false);
   const [fileErrMsg, setFileErrorMsg] = useState("");
+  const [isDepreciation, setIsDepreciation] = useState(false)
+  const [selectedOption, setSelectedOption] = useState('none');
+  const [selectedForm, setSelectedForm] = useState('none');
+  const [selectedCategory, setSelectedCategory] = useState('none');
+  const [showAdditionalDropdowns, setShowAdditionalDropdowns] = useState(false);
+
+  const handleOptionChange = (event: any) => {
+    const selectedOption = event.target.value;
+    setSelectedOption(selectedOption);
+    setShowAdditionalDropdowns(selectedOption === 'Depreciation');
+  };
+
+
+  const handleFormDropDownChange = (event: any) => {
+    const selectedValue = event.target.value;
+    setSelectedForm(selectedValue);
+  };
+
+  const handleCategoryDropDownChange = (event: any) => {
+    const selectedValue = event.target.value;
+    setSelectedCategory(selectedValue);
+  };
 
   const handleChange = (e: any) => {
     if (e.target.files && e.target.files[0]) {
@@ -58,11 +80,9 @@ const Schd = () => {
     setDisabled(true);
     const body = new FormData();
     body.append("file", image);
-    body.append("selected_form", "2");
-    body.append("selected_category", "8");
-    console.log("body", body);
-    console.log("image", image);
-    
+    body.append("selected_form", selectedForm);
+    body.append("selected_category", selectedCategory);
+
     try {
       let response = await axios.post(
         `https://apiuattaxworkpaper.pacificabs.com:5000/process_file`,
@@ -90,7 +110,6 @@ const Schd = () => {
     <>
       <main className={`min-h-screen`}>
         <Header />
-
         {disabled ? (
           <>
             <div className="flex justify-center items-center min-h-[calc(100vh-70px)] bg-[#fcfcff]">
@@ -117,7 +136,13 @@ const Schd = () => {
                   <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr className="text-center">
                       <th scope="col" className="px-6 py-3 text-start">
+                        Select the option
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-start">
                         Depreciation and Sch D
+                      </th>
+                      <th>
+                        {showAdditionalDropdowns && ("options")}
                       </th>
                       <th scope="col" className="px-6 py-3">
                         Action
@@ -126,6 +151,14 @@ const Schd = () => {
                   </thead>
                   <tbody>
                     <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 text-center">
+                      <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-start">
+                        <select className="mb-[18px]" value={selectedOption} onChange={handleOptionChange}>
+                          <option value="none" selected disabled hidden>Select an Option</option>
+                          <option value="Depreciation">Depreciation</option>
+                          <option value="Sch D">Sch D</option>
+                        </select>
+
+                      </td>
                       <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-start">
                         <input
                           className="w-full text-sm text-gray-900 border border-gray-300 cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
@@ -151,13 +184,53 @@ const Schd = () => {
                           </p>
                         )}
                       </td>
+                      <td >
+                        {showAdditionalDropdowns && (
+                          <div className="w-max mb-[20px]">
+
+                            <select className="m-3 w-[123px]" value={selectedForm} onChange={handleFormDropDownChange}>
+                              <option value="none" selected disabled hidden>Select an Option</option>
+                              <option value="1">1.Schedule A (2%)</option>
+                              <option value="2">2.Schedule C</option>
+                              <option value="3">3.Schedule E (rental)</option>
+                              <option value="4">4.Schedule F/Form 4835</option>
+                              <option value="5">5.Form 2106</option>
+                              <option value="6">6.Schedule A (other)</option>
+                              <option value="7">7.Schedule A (points)</option>
+                              <option value="8">8.Schedule A (employee business expense)</option>
+                              <option value="9">9.Business Use of Home</option>
+                              <option value="10">10.Schedule E (vacation home)</option>
+                              <option value="11">11.Schedule E (partnership)</option>
+                              <option value="12">12.Schedule E (S corporation)</option>
+                              <option value="13">13.Schedule E (estate or trust)</option>
+                              <option value="14">14.Oil & Gas Property</option>
+                              <option value="15">15.Oil & Gas set</option>
+                              <option value="16">16.Form 4562 only</option>
+                            </select>
+
+
+                            <select className="m-3 " value={selectedCategory} onChange={handleCategoryDropDownChange}>
+                              <option value="none" selected disabled hidden>Select an Option</option>
+                              <option value="1">1.Automobile / Transportation Equipment</option>
+                              <option value="2">2.Furniture and Fixtures</option>
+                              <option value="3">3.Furniture and Fixtures</option>
+                              <option value="4">4.Machinery and Equipment</option>
+                              <option value="5">5.Buildings</option>
+                              <option value="6">6.Improvements</option>
+                              <option value="7">7.Land</option>
+                              <option value="8">8.Miscellaneous</option>
+                              <option value="9">9.Amortization</option>
+                            </select>
+
+                          </div>
+                        )}
+                      </td>
                       <td className="flex px-6 py-4 gap-[15px] justify-center">
                         <button
-                          className={`flex gap-[15px] bg-[#1492c8] text-white text-sm font-semibold px-4 py-2 rounded-md ${
-                            disabled || fileError || !uploadBtn
-                              ? "cursor-not-allowed opacity-50"
-                              : ""
-                          }`}
+                          className={`flex gap-[15px] bg-[#1492c8] text-white text-sm font-semibold px-4 py-2 rounded-md ${disabled || fileError || !uploadBtn
+                            ? "cursor-not-allowed opacity-50"
+                            : ""
+                            }`}
                           onClick={
                             disabled || !uploadBtn || fileError
                               ? undefined
@@ -178,9 +251,8 @@ const Schd = () => {
                           href={
                             downloadBtn ? downloadUrl : "javascript:void(0);"
                           }
-                          className={`flex gap-[15px] bg-[#259916] text-white text-sm font-semibold px-4 py-2 rounded-md ${
-                            downloadBtn ? "" : "cursor-not-allowed opacity-50"
-                          }`}
+                          className={`flex gap-[15px] bg-[#259916] text-white text-sm font-semibold px-4 py-2 rounded-md ${downloadBtn ? "" : "cursor-not-allowed opacity-50"
+                            }`}
                         >
                           {/* onClick={
                       downloadBtn
