@@ -37,6 +37,8 @@ const Schd = () => {
     const selectedOption = event.target.value;
     setSelectedOption(selectedOption);
     setShowAdditionalDropdowns(selectedOption === "Depreciation");
+    setSelectedForm("none");
+    setSelectedCategory("none");
   };
 
   const handleFormDropDownChange = (event: any) => {
@@ -235,11 +237,8 @@ const Schd = () => {
                               <option value="none" selected disabled hidden>
                                 Select an Option
                               </option>
-                              <option value="1">
-                                Automobile / Transportation Equipment
-                              </option>
+                              <option value="1">Automobile / Transportation Equipment</option>
                               <option value="2">Furniture and Fixtures</option>
-                              <option value="3">Furniture and Fixtures</option>
                               <option value="4">Machinery and Equipment</option>
                               <option value="5">Buildings</option>
                               <option value="6">Improvements</option>
