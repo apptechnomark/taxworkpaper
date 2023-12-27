@@ -176,7 +176,7 @@ const Automation = () => {
                         ? () => handelDownload(images)
                         : undefined
                     } */}
-                        Download
+                        Download 
                       </a>
                     </td>
                   </tr>
