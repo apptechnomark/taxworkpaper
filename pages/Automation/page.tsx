@@ -135,7 +135,7 @@ const Automation = () => {
                       )}
                       {!fileError && (
                         <p className="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">
-                          Upload your ZIP file here.
+                          Upload your .zip file here.
                         </p>
                       )}
                     </td>
