@@ -180,6 +180,18 @@ const Automation = () => {
                       </a>
                     </td>
                   </tr>
+                  <tr>
+                    <td colSpan={2} className="bg-white py-3 px-5">
+                      <p><strong>Important Notes:</strong></p>
+                      <ol className="list-decimal ps-4 pt-2">
+                        <li className="pb-1">To utilize the Indexing and Bookmarking Tool, users must upload a single .zip folder.</li>
+                        <li className="pb-1">The .zip folder should consistently contain subfolders with the following names: 1040, Organizer, Emails, and Standard Documents.</li>
+                        <li className="pb-1">Note that the page sequence for 1040, Organizer, and Emails will not function linearly; it will follow the order of 1040, Organizer, and Emails.</li>
+                        <li className="pb-1">This specific sequence, however, applies only to standard documents.</li>
+                        <li className="pb-1">In the case of standard documents, if two forms are identified under a single page, they will be bookmarked as "Brokerage".</li>
+                      </ol>
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
