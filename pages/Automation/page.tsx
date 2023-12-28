@@ -179,6 +179,8 @@ const Automation = () => {
                         <li className="pb-1">Note that the page sequence for 1040, Organizer, and Emails will not function linearly; it will follow the order of 1040, Organizer, and Emails.</li>
                         <li className="pb-1">This specific sequence, however, applies only to standard documents.</li>
                         <li className="pb-1">In the case of standard documents, if two forms are identified under a single page, they will be bookmarked as &quot;Brokerage&quot;.</li>
+                        <li className="pb-1">If the form name cannot be identified, it will be categorized under the bookmark name as &quot;Other.&quot; </li>
+                        <li className="pb-1">Indexing and Bookmarking Tool exclusively works with PDF files and does not support other file formats such as Images, Word, Excel, PowerPoint, etc...</li>
                       </ol>
                     </td>
                   </tr>
