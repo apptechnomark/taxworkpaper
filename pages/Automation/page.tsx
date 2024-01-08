@@ -59,7 +59,7 @@ const Automation = () => {
     body.append("file", image);
     try {
       let response = await axios.post(
-        `https://apiuattaxworkpaper.pacificabs.com:5000/process_pdf`,
+        `https://apitaxworkpaper.pacificabs.com:5001/process_pdf`,
         body
       );
       if (response.status === 200) {
@@ -67,7 +67,7 @@ const Automation = () => {
         const fileName = images;
         const name = fileName.substring(0, fileName?.indexOf("."));
         setDownloadUrl(
-          `https://apiuattaxworkpaper.pacificabs.com:5000/download_pdf?file_name=${name}`
+          `https://apitaxworkpaper.pacificabs.com:5001/download_pdf?file_name=${name}`
         );
         setDownloadBtn(true);
         setUploadBtn(false);

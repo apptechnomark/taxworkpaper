@@ -86,7 +86,7 @@ const Schd = () => {
 
     try {
       let response = await axios.post(
-        `https://apiuattaxworkpaper.pacificabs.com:5000/process_file`,
+        `https://apitaxworkpaper.pacificabs.com:5001/process_file`,
         body
       );
       if (response.status === 200) {
@@ -94,7 +94,7 @@ const Schd = () => {
         const fileName = images;
         const name = fileName.substring(0, fileName?.indexOf("."));
         setDownloadUrl(
-          `https://apiuattaxworkpaper.pacificabs.com:5000/download_file?file_name=${name}`
+          `https://apitaxworkpaper.pacificabs.com:5001/download_file?file_name=${name}`
         );
         setDownloadBtn(true);
         setUploadBtn(false);
