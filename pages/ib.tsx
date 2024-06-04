@@ -58,7 +58,7 @@ const IndexBookMarking = () => {
     setDisabled(true);
     const body = new FormData();
     body.append("file", image);
-    try {
+    try { 
       let response = await axios.post(
         `https://apiuattaxworkpaper.pacificabs.com:5003/process_pdf`,
         body
