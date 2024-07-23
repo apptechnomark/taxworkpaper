@@ -60,7 +60,7 @@ const IndexBookMarking = () => {
     body.append("file", image);
     try { 
       let response = await axios.post(
-        `https://pythonapi.pacificabs.com/:5000/process_pdf`,
+        `https://pythonapi.pacificabs.com:5000/process_pdf`,
         body
       );
       if (response.status === 200) {
@@ -68,7 +68,7 @@ const IndexBookMarking = () => {
         const fileName = images;
         const name = fileName.substring(0, fileName?.indexOf("."));
         setDownloadUrl(
-          `https://pythonapi.pacificabs.com/:5000/download_pdf?file_name=${name}`
+          `https://pythonapi.pacificabs.com:5000/download_pdf?file_name=${name}`
         );
         setDownloadBtn(true);
         setUploadBtn(false);
