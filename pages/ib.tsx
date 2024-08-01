@@ -26,6 +26,8 @@ interface BookmarkDetail {
 
 interface ResponseData {
   bookmark_detail: BookmarkDetail[];
+  preview_pdf: string;
+  meta_folder: string;
   file_name: string;
   message: string;
 }
@@ -95,10 +97,7 @@ const IndexBookMarking = () => {
             <Image src={loader} alt="Loader" />
           </div>
         ) : fileUploaded ? (
-          <ReorderSection
-            data={data}
-            setFileUploaded={setFileUploaded}
-          />
+          <ReorderSection data={data} setFileUploaded={setFileUploaded} />
         ) : (
           <UploadSection
             fileUploaded={fileUploaded}
