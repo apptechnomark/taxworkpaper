@@ -75,7 +75,7 @@ const LargeImageModal: React.FC<LargeImageModalProps> = ({
           </IconButton>
           <div className="h-[95vh] py-8 gap-8 flex flex-col items-center justify-between">
             <img
-              src={src}
+              src={"https://pythonapi.pacificabs.com:5000/" + src}
               alt="Large view"
               style={{
                 maxWidth: "100%",
@@ -85,7 +85,7 @@ const LargeImageModal: React.FC<LargeImageModalProps> = ({
                 objectFit: "contain",
               }}
             />
-            <div className="flex items-end justify-between w-full gap-20">
+            <div className="flex items-end justify-center w-full gap-20">
               <div className="flex items-end justify-center">
                 <FormControl variant="standard" sx={{ mx: 0.75, width: 210 }}>
                   <InputLabel id="demo-simple-select-standard-label">
@@ -116,7 +116,7 @@ const LargeImageModal: React.FC<LargeImageModalProps> = ({
                   Move
                 </Button>
               </div>
-              <Button
+              {/* <Button
                 variant="outlined"
                 className="rounded-[4px] !h-[36px]"
                 color="error"
@@ -125,7 +125,7 @@ const LargeImageModal: React.FC<LargeImageModalProps> = ({
                 <span className="flex items-center justify-center gap-[10px] px-[5px]">
                   Delete
                 </span>
-              </Button>
+              </Button> */}
             </div>
           </div>
         </DialogContent>
@@ -135,9 +135,11 @@ const LargeImageModal: React.FC<LargeImageModalProps> = ({
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
       >
-        <DialogTitle>Delete Confirmation</DialogTitle>
+        <DialogTitle className="border-b">Delete Confirmation</DialogTitle>
         <DialogContent>
-          Are you sure you want to delete this page?
+          <p className="pt-2 pb-10 pr-20">
+            Are you sure you want to delete this page?
+          </p>
         </DialogContent>
         <DialogActions>
           <Button

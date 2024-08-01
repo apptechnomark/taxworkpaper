@@ -164,12 +164,12 @@ const DraganddropNew: React.FC<DragAndDropProps> = ({
             <p className="font-bold flex items-center justify-center min-w-[10%] max-w-[10%]">
               {file.bookmark + ":"}
             </p>
-            {file.pdf.length > 0 && (
+            {file.pdf?.length > 0 && (
               <div className="min-w-[90%] max-w-[90%] flex flex-row items-center justify-start p-2 gap-2 border rounded-lg flex-wrap">
                 {file.pdf.map((pdfUrl, pdfIndex) => (
                   <PdfItem
                     key={pdfIndex}
-                    pdfUrl={pdfUrl}
+                    pdfUrl={"https://pythonapi.pacificabs.com:5000/" + pdfUrl}
                     index={pdfIndex}
                     bookmarkIndex={bookmarkIndex}
                     movePdf={movePdf}
