@@ -47,6 +47,7 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
   const [changesMade, setChangesMade] = useState(false);
   const [saveButtonDisabled, setSaveButtonDisabled] = useState(true);
   const [previewButtonDisabled, setPreviewButtonDisabled] = useState(true);
+  const [downloadButtonDisabled, setDownloadButtonDisabled] = useState(false);
   const [fileData, setFileData] = useState<BookmarkDetail[]>([]);
   const [previewFile, setPreviewFile] = useState("");
   const [downloadFile, setDownloadFile] = useState("");
@@ -67,6 +68,7 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
     if (changesMade) {
       setSaveButtonDisabled(false);
       setPreviewButtonDisabled(true);
+      setDownloadButtonDisabled(true);
     } else {
       setSaveButtonDisabled(true);
     }
@@ -89,6 +91,7 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
         setChangesMade(false);
         setSaveButtonDisabled(true);
         setPreviewButtonDisabled(false);
+        setDownloadButtonDisabled(false);
         setPreviewFile(response.data.preview_pdf);
         setDownloadFile(response.data.meta_folder);
       } else {
@@ -138,12 +141,15 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
-          a.download = data ? `${data.file_name.split(".pdf")[0]}.zip` : "marge_pdf.zip";
+          a.download = data
+            ? `${data.file_name.split(".pdf")[0]}.zip`
+            : "marge_pdf.zip";
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
           window.URL.revokeObjectURL(url);
           toast.success("Data exported successfully.");
+          setDownloadDialogOpen(false);
         }
       } else {
         toast.error("Please try again later.");
@@ -190,17 +196,24 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
                           ? "cursor-not-allowed opacity-50"
                           : ""
                       }`}
-                      // onClick={
-                      //   previewButtonDisabled ? undefined : handlePreviewClick
-                      // }
+                      disabled={previewButtonDisabled}
                     >
-                      <a href={previewFile} target="_blank">
-                        Preview
-                      </a>
+                      {previewButtonDisabled ? (
+                        "Preview"
+                      ) : (
+                        <a href={previewFile} target="_blank">
+                          Preview
+                        </a>
+                      )}
                     </button>
                     <button
-                      className="flex gap-[15px] bg-[#259916] text-white text-sm font-semibold px-4 py-2 rounded-md"
+                      className={`flex gap-[15px] bg-[#259916] text-white text-sm font-semibold px-4 py-2 rounded-md ${
+                        downloadButtonDisabled
+                          ? "cursor-not-allowed opacity-50"
+                          : ""
+                      }`}
                       onClick={() => setDownloadDialogOpen(true)}
+                      disabled={downloadButtonDisabled}
                     >
                       Download
                     </button>
