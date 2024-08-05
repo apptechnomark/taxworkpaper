@@ -10,6 +10,7 @@ import {
   DialogContent,
   DialogTitle,
 } from "@mui/material";
+import DraganddropMove from "./DraganddropMove";
 
 const toastOptions: ToastOptions = {
   position: "top-right",
@@ -223,7 +224,13 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
             </thead>
             <tbody>
               <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 text-center">
-                <DraganddropNew
+                {/* <DraganddropNew
+                  fileData={fileData}
+                  setFileData={setFileData}
+                  onDataChange={() => setChangesMade(true)}
+                /> */}
+
+                <DraganddropMove
                   fileData={fileData}
                   setFileData={setFileData}
                   onDataChange={() => setChangesMade(true)}
