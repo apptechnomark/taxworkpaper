@@ -102,12 +102,18 @@ const DropTarget: React.FC<{
     }),
   });
 
+  const containerStyle: React.CSSProperties = {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "10px",
+  };
+
   return (
     <div
       ref={drop}
       className="flex items-center justify-start border border-white min-w-[95%] min-h-[100px] rounded-lg p-5 gap-4"
     >
-      {children}
+      <div style={containerStyle}>{children}</div>
     </div>
   );
 };
