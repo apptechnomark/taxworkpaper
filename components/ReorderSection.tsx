@@ -1,14 +1,20 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { toast, ToastOptions } from "react-toastify";
 import Draganddrop from "tsconfig.json/components/Draganddrop`";
 import DraganddropNew from "./DraganddropNew";
 import {
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
 } from "@mui/material";
 import DraganddropMove from "./DraganddropMove";
 
@@ -45,6 +51,7 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
   data,
   setFileUploaded,
 }) => {
+  const warnedRef = useRef(false);
   const [changesMade, setChangesMade] = useState(false);
   const [saveButtonDisabled, setSaveButtonDisabled] = useState(true);
   const [previewButtonDisabled, setPreviewButtonDisabled] = useState(true);
@@ -53,15 +60,27 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
   const [previewFile, setPreviewFile] = useState("");
   const [downloadFile, setDownloadFile] = useState("");
   const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
+  const [downloadType, setDownloadType] = useState(1);
+  const [loader, setLoader] = useState(false);
 
   useEffect(() => {
-    if (data !== null && data.bookmark_detail.length > 0) {
+    if (data !== null && data.bookmark_detail?.length > 0) {
       setFileData(data.bookmark_detail);
       setPreviewFile(data.preview_pdf);
       setDownloadFile(data.meta_folder);
       setSaveButtonDisabled(false);
     } else {
       setFileData([]);
+      if (
+        !warnedRef.current &&
+        (data === null ||
+          !data.bookmark_detail ||
+          data.bookmark_detail.length === 0)
+      ) {
+        toast.warning("No data found Please provide valid file.");
+        setFileUploaded(false);
+        warnedRef.current = true;
+      }
     }
   }, [data]);
 
@@ -120,6 +139,7 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
   };
 
   const handleDownloadClick = async () => {
+    setLoader(true);
     try {
       const response = await axios.get(
         `https://pythonapi.pacificabs.com:5000/download_pdf`,
@@ -127,6 +147,7 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
           params: {
             meta_fol: downloadFile,
             ufilename: !!data && data.file_name,
+            downloadType: downloadType,
           },
           responseType: "blob",
         }
@@ -135,6 +156,7 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
       if (response.status === 200) {
         if (response.data.ResponseStatus === "Failure") {
           toast.error("Please try again later.");
+          setLoader(false);
         } else {
           const blob = new Blob([response.data], {
             type: "application/zip",
@@ -150,7 +172,9 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
           document.body.removeChild(a);
           window.URL.revokeObjectURL(url);
           toast.success("Data exported successfully.");
+          setLoader(false);
           setDownloadDialogOpen(false);
+          setFileUploaded(false);
         }
       } else {
         toast.error("Please try again later.");
@@ -181,6 +205,29 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
                 >
                   Reorder
                   <div className="flex items-center justify-center gap-4">
+                    <FormControl
+                      variant="standard"
+                      sx={{ mx: 0.75, width: 300, borderColor: "#FFFFFF" }}
+                    >
+                      <InputLabel
+                        id="demo-simple-select-standard-label"
+                        className="!text-gray-400"
+                      >
+                        Download type
+                      </InputLabel>
+                      <Select
+                        labelId="demo-simple-select-standard-label"
+                        id="demo-simple-select-standard"
+                        className="!text-gray-400 capitalize"
+                        value={downloadType}
+                        onChange={(e) =>
+                          setDownloadType(Number(e.target.value))
+                        }
+                      >
+                        <MenuItem value={1}>Default</MenuItem>
+                        <MenuItem value={2}>Ultra</MenuItem>
+                      </Select>
+                    </FormControl>
                     <button
                       className={`flex gap-[15px] bg-[#1492C8] text-white text-sm font-semibold px-4 py-2 rounded-md ${
                         saveButtonDisabled
@@ -261,13 +308,19 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
                     >
                       Preview
                     </Button>
-                    <Button
-                      onClick={handleDownloadClick}
-                      color="success"
-                      variant="contained"
-                    >
-                      Yes
-                    </Button>
+                    {loader ? (
+                      <div className="w-[64px] flex items-center justify-center">
+                        <CircularProgress />
+                      </div>
+                    ) : (
+                      <Button
+                        onClick={handleDownloadClick}
+                        color="success"
+                        variant="contained"
+                      >
+                        Yes
+                      </Button>
+                    )}
                   </DialogActions>
                 </Dialog>
               </tr>
