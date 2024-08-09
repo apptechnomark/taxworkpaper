@@ -2,7 +2,7 @@
 import React, { useState, useCallback } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import LargeImageModal from "./LargeImageModal";
+import LargeImageModal from "../LargeImageModal";
 
 interface FileData {
   bookmark: string;

@@ -2,8 +2,8 @@
 import axios from "axios";
 import React, { useState, useEffect, useRef } from "react";
 import { toast, ToastOptions } from "react-toastify";
-import Draganddrop from "tsconfig.json/components/Draganddrop`";
-import DraganddropNew from "./DraganddropNew";
+import Draganddrop from "tsconfig.json/components/OldComponents/Draganddrop`";
+import DraganddropNew from "./OldComponents/DraganddropNew";
 import {
   Button,
   CircularProgress,
@@ -17,6 +17,9 @@ import {
   Select,
 } from "@mui/material";
 import DraganddropMove from "./DraganddropMove";
+import DisplayImages from "./DisplayImages";
+import Image from "next/image";
+import loader from "../public/loder.gif";
 
 const toastOptions: ToastOptions = {
   position: "top-right",
@@ -31,6 +34,8 @@ const toastOptions: ToastOptions = {
 
 interface ReorderSectionProps {
   data: ResponseData | null;
+  setData: any;
+  fileName: string | null;
   setFileUploaded: any;
 }
 
@@ -49,26 +54,29 @@ interface ResponseData {
 
 const ReorderSection: React.FC<ReorderSectionProps> = ({
   data,
+  setData,
+  fileName,
   setFileUploaded,
 }) => {
   const warnedRef = useRef(false);
+  const [disabled, setDisabled] = useState(true);
   const [changesMade, setChangesMade] = useState(false);
   const [saveButtonDisabled, setSaveButtonDisabled] = useState(true);
-  const [previewButtonDisabled, setPreviewButtonDisabled] = useState(true);
+  const [previewButtonDisabled, setPreviewButtonDisabled] = useState(false);
   const [downloadButtonDisabled, setDownloadButtonDisabled] = useState(false);
   const [fileData, setFileData] = useState<BookmarkDetail[]>([]);
   const [previewFile, setPreviewFile] = useState("");
   const [downloadFile, setDownloadFile] = useState("");
   const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
   const [downloadType, setDownloadType] = useState(1);
-  const [loader, setLoader] = useState(false);
+  const [downloadLoader, setDownloadLoader] = useState(false);
 
   useEffect(() => {
     if (data !== null && data.bookmark_detail?.length > 0) {
       setFileData(data.bookmark_detail);
       setPreviewFile(data.preview_pdf);
       setDownloadFile(data.meta_folder);
-      setSaveButtonDisabled(false);
+      // setSaveButtonDisabled(false);
     } else {
       setFileData([]);
       if (
@@ -85,16 +93,12 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
   }, [data]);
 
   useEffect(() => {
-    if (changesMade) {
-      setSaveButtonDisabled(false);
-      setPreviewButtonDisabled(true);
-      setDownloadButtonDisabled(true);
-    } else {
-      setSaveButtonDisabled(true);
-    }
-  }, [changesMade]);
+    setSaveButtonDisabled(true);
+    handleSave(false);
+  }, [downloadType]);
 
-  const handleSave = async () => {
+  const handleSave = async (save: boolean) => {
+    setDisabled(true);
     try {
       let response = await axios.post(
         `https://pythonapi.pacificabs.com:5000/re_arrange_pdf`,
@@ -104,6 +108,8 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
           preview_pdf: data?.preview_pdf,
           file_name: data?.file_name,
           message: data?.message,
+          dtype: downloadType,
+          is_save: save,
         }
       );
       if (response.status === 200) {
@@ -112,15 +118,19 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
         setSaveButtonDisabled(true);
         setPreviewButtonDisabled(false);
         setDownloadButtonDisabled(false);
+        setData(response.data);
         setPreviewFile(response.data.preview_pdf);
         setDownloadFile(response.data.meta_folder);
+        setDisabled(false);
       } else {
         toast.error(response.data.message, toastOptions);
         setPreviewFile("");
         setDownloadFile("");
+        setDisabled(false);
       }
     } catch (error: any) {
       toast.error(error.message, toastOptions);
+      setDisabled(false);
       // setChangesMade(false);
       // setSaveButtonDisabled(true);
       // setPreviewButtonDisabled(false);
@@ -130,23 +140,23 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
   const handlePreviewClick = () => {
     const link = document.createElement("a");
     link.href = previewFile;
-    link.download = !!data ? data.file_name : "marge_pdf.pdf";
+    link.download = !!fileName ? fileName : "marge_pdf.pdf";
     link.target = "_blank";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    setPreviewButtonDisabled(true);
+    // setPreviewButtonDisabled(true);
   };
 
   const handleDownloadClick = async () => {
-    setLoader(true);
+    setDownloadLoader(true);
     try {
       const response = await axios.get(
         `https://pythonapi.pacificabs.com:5000/download_pdf`,
         {
           params: {
             meta_fol: downloadFile,
-            ufilename: !!data && data.file_name,
+            ufilename: !!fileName ? fileName : "marge_pdf.pdf",
             downloadType: downloadType,
           },
           responseType: "blob",
@@ -156,7 +166,7 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
       if (response.status === 200) {
         if (response.data.ResponseStatus === "Failure") {
           toast.error("Please try again later.");
-          setLoader(false);
+          setDownloadLoader(false);
         } else {
           const blob = new Blob([response.data], {
             type: "application/zip",
@@ -164,15 +174,15 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
-          a.download = data
-            ? `${data.file_name.split(".pdf")[0]}.zip`
+          a.download = !!fileName
+            ? `${fileName.split(".pdf")[0]}.zip`
             : "marge_pdf.zip";
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
           window.URL.revokeObjectURL(url);
           toast.success("Data exported successfully.");
-          setLoader(false);
+          setDownloadLoader(false);
           setDownloadDialogOpen(false);
           setFileUploaded(false);
         }
@@ -184,151 +194,179 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
     }
   };
 
+  useEffect(() => {
+    if (changesMade) {
+      setSaveButtonDisabled(false);
+      setPreviewButtonDisabled(true);
+      setDownloadButtonDisabled(true);
+    } else {
+      setSaveButtonDisabled(true);
+    }
+  }, [changesMade]);
+
   return (
-    <section className="automationSection px-5 py-9">
-      <div className="container mx-auto px-20">
-        <p
-          className="mb-4 cursor-pointer"
-          onClick={() => {
-            setFileUploaded(false);
-          }}
-        >
-          &lt;&nbsp;Go Back
-        </p>
-        <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-              <tr className="text-center">
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-start flex items-center justify-between"
-                >
-                  Reorder
-                  <div className="flex items-center justify-center gap-4">
-                    <FormControl
-                      variant="standard"
-                      sx={{ mx: 0.75, width: 300, borderColor: "#FFFFFF" }}
+    <>
+      {disabled ? (
+        <div className="flex justify-center items-center min-h-[calc(100vh-70px)] bg-[#fcfcff]">
+          <Image src={loader} alt="Loader" />
+        </div>
+      ) : (
+        <section className="automationSection px-5 py-9">
+          <div className="container mx-auto px-20">
+            <span
+              className="cursor-pointer"
+              onClick={() => {
+                setFileUploaded(false);
+              }}
+            >
+              &lt;&nbsp;Go Back
+            </span>
+            <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-4">
+              <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                  <tr className="text-center">
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-start flex items-center justify-between"
                     >
-                      <InputLabel
-                        id="demo-simple-select-standard-label"
-                        className="!text-gray-400"
-                      >
-                        Download type
-                      </InputLabel>
-                      <Select
-                        labelId="demo-simple-select-standard-label"
-                        id="demo-simple-select-standard"
-                        className="!text-gray-400 capitalize"
-                        value={downloadType}
-                        onChange={(e) =>
-                          setDownloadType(Number(e.target.value))
-                        }
-                      >
-                        <MenuItem value={1}>Default</MenuItem>
-                        <MenuItem value={2}>Ultra</MenuItem>
-                      </Select>
-                    </FormControl>
-                    <button
-                      className={`flex gap-[15px] bg-[#1492C8] text-white text-sm font-semibold px-4 py-2 rounded-md ${
-                        saveButtonDisabled
-                          ? "cursor-not-allowed opacity-50"
-                          : ""
-                      }`}
-                      onClick={saveButtonDisabled ? undefined : handleSave}
-                    >
-                      Save
-                    </button>
-                    <button
-                      className={`flex gap-[15px] bg-[#259916] text-white text-sm font-semibold px-4 py-2 rounded-md ${
-                        previewButtonDisabled
-                          ? "cursor-not-allowed opacity-50"
-                          : ""
-                      }`}
-                      disabled={previewButtonDisabled}
-                    >
-                      {previewButtonDisabled ? (
-                        "Preview"
-                      ) : (
-                        <a href={previewFile} target="_blank">
-                          Preview
-                        </a>
-                      )}
-                    </button>
-                    <button
-                      className={`flex gap-[15px] bg-[#259916] text-white text-sm font-semibold px-4 py-2 rounded-md ${
-                        downloadButtonDisabled
-                          ? "cursor-not-allowed opacity-50"
-                          : ""
-                      }`}
-                      onClick={() => setDownloadDialogOpen(true)}
-                      disabled={downloadButtonDisabled}
-                    >
-                      Download
-                    </button>
-                  </div>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 text-center">
-                {/* <DraganddropNew
+                      Reorder
+                      <div className="flex items-center justify-center gap-4">
+                        <FormControl
+                          variant="standard"
+                          sx={{ mx: 0.75, width: 300, borderColor: "#FFFFFF" }}
+                        >
+                          <InputLabel
+                            id="demo-simple-select-standard-label"
+                            className="!text-gray-400"
+                          >
+                            Download type
+                          </InputLabel>
+                          <Select
+                            labelId="demo-simple-select-standard-label"
+                            id="demo-simple-select-standard"
+                            className="!text-gray-400 capitalize"
+                            value={downloadType}
+                            onChange={(e) =>
+                              setDownloadType(Number(e.target.value))
+                            }
+                          >
+                            <MenuItem value={1}>Default</MenuItem>
+                            <MenuItem value={2}>Ultra</MenuItem>
+                          </Select>
+                        </FormControl>
+                        <button
+                          className={`flex gap-[15px] bg-[#1492C8] text-white text-sm font-semibold px-4 py-2 rounded-md ${
+                            saveButtonDisabled
+                              ? "cursor-not-allowed opacity-50"
+                              : ""
+                          }`}
+                          onClick={() =>
+                            saveButtonDisabled ? undefined : handleSave(true)
+                          }
+                          disabled={saveButtonDisabled}
+                        >
+                          Save
+                        </button>
+                        <button
+                          // className="flex gap-[15px] bg-[#259916] text-white text-sm font-semibold px-4 py-2 rounded-md"
+                          className={`flex gap-[15px] bg-[#259916] text-white text-sm font-semibold px-4 py-2 rounded-md ${
+                            previewButtonDisabled
+                              ? "cursor-not-allowed opacity-50"
+                              : ""
+                          }`}
+                          disabled={previewButtonDisabled}
+                        >
+                          {previewButtonDisabled ? (
+                            "Preview"
+                          ) : (
+                            <a href={previewFile} target="_blank">
+                              Preview
+                            </a>
+                          )}
+                        </button>
+                        <button
+                          className={`flex gap-[15px] bg-[#259916] text-white text-sm font-semibold px-4 py-2 rounded-md ${
+                            downloadButtonDisabled
+                              ? "cursor-not-allowed opacity-50"
+                              : ""
+                          }`}
+                          onClick={() => setDownloadDialogOpen(true)}
+                          disabled={downloadButtonDisabled}
+                        >
+                          Download
+                        </button>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 text-center">
+                    {/* <DraganddropNew
                   fileData={fileData}
                   setFileData={setFileData}
                   onDataChange={() => setChangesMade(true)}
                 /> */}
 
-                <DraganddropMove
-                  fileData={fileData}
-                  setFileData={setFileData}
-                  onDataChange={() => setChangesMade(true)}
-                />
-
-                <Dialog
-                  open={downloadDialogOpen}
-                  onClose={() => setDownloadDialogOpen(false)}
-                >
-                  <DialogTitle className="border-b">Download File</DialogTitle>
-                  <DialogContent>
-                    <p className="pt-2 pb-10 pr-20">
-                      Please preview before download?
-                    </p>
-                  </DialogContent>
-                  <DialogActions>
-                    <Button
-                      onClick={() => setDownloadDialogOpen(false)}
-                      color="error"
-                      variant="outlined"
-                    >
-                      Close
-                    </Button>
-                    <Button
-                      onClick={handlePreviewClick}
-                      color="primary"
-                      variant="contained"
-                    >
-                      Preview
-                    </Button>
-                    {loader ? (
-                      <div className="w-[64px] flex items-center justify-center">
-                        <CircularProgress />
-                      </div>
+                    {downloadType === 1 ? (
+                      <DraganddropMove
+                        fileData={fileData}
+                        setFileData={setFileData}
+                        onDataChange={() => setChangesMade(true)}
+                      />
                     ) : (
-                      <Button
-                        onClick={handleDownloadClick}
-                        color="success"
-                        variant="contained"
-                      >
-                        Yes
-                      </Button>
+                      <DisplayImages fileData={fileData} />
                     )}
-                  </DialogActions>
-                </Dialog>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
+
+                    <Dialog
+                      open={downloadDialogOpen}
+                      onClose={() => setDownloadDialogOpen(false)}
+                    >
+                      <DialogTitle className="border-b">
+                        Download File
+                      </DialogTitle>
+                      <DialogContent>
+                        <p className="pt-2 pb-10 pr-20">
+                          Please preview before download?
+                        </p>
+                      </DialogContent>
+                      <DialogActions>
+                        <Button
+                          onClick={() => setDownloadDialogOpen(false)}
+                          color="error"
+                          variant="outlined"
+                        >
+                          Close
+                        </Button>
+                        <Button
+                          onClick={handlePreviewClick}
+                          color="primary"
+                          variant="contained"
+                        >
+                          Preview
+                        </Button>
+                        {downloadLoader ? (
+                          <div className="w-[64px] flex items-center justify-center">
+                            <CircularProgress />
+                          </div>
+                        ) : (
+                          <Button
+                            onClick={handleDownloadClick}
+                            color="success"
+                            variant="contained"
+                          >
+                            Yes
+                          </Button>
+                        )}
+                      </DialogActions>
+                    </Dialog>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      )}
+    </>
   );
 };
 
