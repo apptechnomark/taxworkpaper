@@ -18,9 +18,9 @@ interface LargeImageModalProps {
   open: boolean;
   src: string;
   onClose: () => void;
-  bookmarks: string[];
-  onMove: (selectedBookmark: string) => void;
-  onDelete: () => void;
+  bookmarks?: string[];
+  onMove?: (selectedBookmark: string) => void;
+  onDelete?: () => void;
 }
 
 const LargeImageModal: React.FC<LargeImageModalProps> = ({
@@ -35,7 +35,7 @@ const LargeImageModal: React.FC<LargeImageModalProps> = ({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const handleMove = () => {
-    onMove(selectedBookmark);
+    onMove?.(selectedBookmark);
     setSelectedBookmark("");
     onClose();
   };
@@ -46,7 +46,7 @@ const LargeImageModal: React.FC<LargeImageModalProps> = ({
   };
 
   const handleDelete = () => {
-    onDelete();
+    onDelete?.();
     setDeleteDialogOpen(false);
     onClose();
   };
@@ -79,44 +79,45 @@ const LargeImageModal: React.FC<LargeImageModalProps> = ({
               alt="Large view"
               style={{
                 maxWidth: "100%",
-                maxHeight: "75vh",
+                maxHeight: `${!!bookmarks ? "75vh" : "90vh"}`,
                 width: "auto",
                 height: "auto",
                 objectFit: "contain",
               }}
             />
-            <div className="flex items-end justify-center w-full gap-20">
-              <div className="flex items-end justify-center">
-                <FormControl variant="standard" sx={{ mx: 0.75, width: 210 }}>
-                  <InputLabel id="demo-simple-select-standard-label">
-                    Move To
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-standard-label"
-                    id="demo-simple-select-standard"
-                    value={selectedBookmark}
-                    onChange={(e) => {
-                      setSelectedBookmark(e.target.value);
-                    }}
+            {!!bookmarks && (
+              <div className="flex items-end justify-center w-full gap-20">
+                <div className="flex items-end justify-center">
+                  <FormControl variant="standard" sx={{ mx: 0.75, width: 210 }}>
+                    <InputLabel id="demo-simple-select-standard-label">
+                      Move To
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-select-standard-label"
+                      id="demo-simple-select-standard"
+                      value={selectedBookmark}
+                      onChange={(e) => {
+                        setSelectedBookmark(e.target.value);
+                      }}
+                    >
+                      {bookmarks?.map((i: any, index: number) => (
+                        <MenuItem value={i} key={index}>
+                          {i}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <Button
+                    type="button"
+                    variant="contained"
+                    className="rounded-[4px] !h-full !mx-2 mt-2 cursor-pointer"
+                    onClick={handleMove}
+                    disabled={!selectedBookmark}
                   >
-                    {bookmarks.map((i: any, index: number) => (
-                      <MenuItem value={i} key={index}>
-                        {i}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <Button
-                  type="button"
-                  variant="contained"
-                  className="rounded-[4px] !h-full !mx-2 mt-2 cursor-pointer"
-                  onClick={handleMove}
-                  disabled={!selectedBookmark}
-                >
-                  Move
-                </Button>
-              </div>
-              {/* <Button
+                    Move
+                  </Button>
+                </div>
+                {/* <Button
                 variant="outlined"
                 className="rounded-[4px] !h-[36px]"
                 color="error"
@@ -126,7 +127,8 @@ const LargeImageModal: React.FC<LargeImageModalProps> = ({
                   Delete
                 </span>
               </Button> */}
-            </div>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>

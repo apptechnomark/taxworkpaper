@@ -39,6 +39,7 @@ const IndexBookMarking = () => {
   const [fileError, setFileError] = useState(false);
   const [fileErrMsg, setFileErrorMsg] = useState("");
   const [fileUploaded, setFileUploaded] = useState(false);
+  const [fileName, setFileName] = useState(null);
   const [data, setData] = useState<ResponseData | null>(null);
 
   const handleChange = (e: any) => {
@@ -76,6 +77,7 @@ const IndexBookMarking = () => {
         toast.success(response.data.message, toastOptions);
         setUploadBtn(false);
         setFileUploaded(true);
+        setFileName(response.data.file_name);
         setData(response.data);
       } else {
         toast.error(response.data.message, toastOptions);
@@ -97,7 +99,12 @@ const IndexBookMarking = () => {
             <Image src={loader} alt="Loader" />
           </div>
         ) : fileUploaded ? (
-          <ReorderSection data={data} setFileUploaded={setFileUploaded} />
+          <ReorderSection
+            data={data}
+            setData={setData}
+            fileName={fileName}
+            setFileUploaded={setFileUploaded}
+          />
         ) : (
           <UploadSection
             fileUploaded={fileUploaded}
