@@ -251,7 +251,9 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
                             }
                           >
                             <MenuItem value={1}>Default</MenuItem>
-                            <MenuItem value={2}>Ultra</MenuItem>
+                            <MenuItem value={2}>UltraTax</MenuItem>
+                            <MenuItem value={3}>Pro-Conect</MenuItem>
+                            <MenuItem value={4}>Pro-Series</MenuItem>
                           </Select>
                         </FormControl>
                         <button
