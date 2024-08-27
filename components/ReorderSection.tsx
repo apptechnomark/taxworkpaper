@@ -37,6 +37,7 @@ interface ReorderSectionProps {
   setData: any;
   fileName: string | null;
   setFileUploaded: any;
+  download: boolean;
 }
 
 interface BookmarkDetail {
@@ -57,6 +58,7 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
   setData,
   fileName,
   setFileUploaded,
+  download,
 }) => {
   const warnedRef = useRef(false);
   const [disabled, setDisabled] = useState(true);
@@ -101,7 +103,11 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
     setDisabled(true);
     try {
       let response = await axios.post(
-        `https://pythonapi.pacificabs.com:5000/re_arrange_pdf`,
+        `${
+          download
+            ? "https://pythonapi.pacificabs.com:5000"
+            : "https://pythonapi.pacificabs.com:5001"
+        }/re_arrange_pdf`,
         {
           bookmark_detail: fileData,
           meta_folder: data?.meta_folder,
@@ -152,7 +158,11 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
     setDownloadLoader(true);
     try {
       const response = await axios.get(
-        `https://pythonapi.pacificabs.com:5000/download_pdf`,
+        `${
+          download
+            ? "https://pythonapi.pacificabs.com:5000"
+            : "https://pythonapi.pacificabs.com:5001"
+        }/download_pdf`,
         {
           params: {
             meta_fol: downloadFile,
