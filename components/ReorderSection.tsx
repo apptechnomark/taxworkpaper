@@ -324,9 +324,10 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
                         fileData={fileData}
                         setFileData={setFileData}
                         onDataChange={() => setChangesMade(true)}
+                        download={download}
                       />
                     ) : (
-                      <DisplayImages fileData={fileData} />
+                      <DisplayImages fileData={fileData} download={download} />
                     )}
 
                     <Dialog

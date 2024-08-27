@@ -20,6 +20,7 @@ interface ImageProps {
     dragBookmarkIndex: number,
     hoverBookmarkIndex: number
   ) => void;
+  download: boolean;
 }
 
 const Image: React.FC<ImageProps> = ({
@@ -27,6 +28,7 @@ const Image: React.FC<ImageProps> = ({
   index,
   bookmarkIndex,
   moveImage,
+  download,
 }) => {
   const [{ isDragging }, drag] = useDrag({
     type: ItemType.IMAGE,
@@ -59,7 +61,13 @@ const Image: React.FC<ImageProps> = ({
     <img
       ref={(node) => drag(drop(node))}
       alt=""
-      src={"https://pythonapi.pacificabs.com:5000/" + src}
+      src={
+        `${
+          download
+            ? "https://pythonapi.pacificabs.com:5000/"
+            : "https://pythonapi.pacificabs.com:5000/"
+        }` + src
+      }
       width="100"
       height="600"
       style={{ opacity: isDragging ? 0.5 : 1, cursor: "move" }}
@@ -122,12 +130,14 @@ interface DragAndDropProps {
   fileData: FileData[];
   setFileData: any;
   onDataChange: (updatedData: FileData[]) => void;
+  download: boolean;
 }
 
 const DraganddropMove: React.FC<DragAndDropProps> = ({
   fileData,
   setFileData,
   onDataChange,
+  download,
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalImageSrc, setModalImageSrc] = useState<string | null>(null);
@@ -267,6 +277,7 @@ const DraganddropMove: React.FC<DragAndDropProps> = ({
                           index={index}
                           bookmarkIndex={bookmarkIndex}
                           moveImage={moveImage}
+                          download={download}
                         />
                       </div>
                     )
@@ -285,6 +296,7 @@ const DraganddropMove: React.FC<DragAndDropProps> = ({
           bookmarks={fileData.map((file) => file.bookmark)}
           onMove={handleMove}
           onDelete={handleDelete}
+          download={download}
         />
       )}
     </DndProvider>

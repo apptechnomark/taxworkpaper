@@ -21,6 +21,7 @@ interface LargeImageModalProps {
   bookmarks?: string[];
   onMove?: (selectedBookmark: string) => void;
   onDelete?: () => void;
+  download: boolean;
 }
 
 const LargeImageModal: React.FC<LargeImageModalProps> = ({
@@ -30,6 +31,7 @@ const LargeImageModal: React.FC<LargeImageModalProps> = ({
   bookmarks,
   onMove,
   onDelete,
+  download,
 }) => {
   const [selectedBookmark, setSelectedBookmark] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -75,7 +77,13 @@ const LargeImageModal: React.FC<LargeImageModalProps> = ({
           </IconButton>
           <div className="h-[95vh] py-8 gap-8 flex flex-col items-center justify-between">
             <img
-              src={"https://pythonapi.pacificabs.com:5000/" + src}
+              src={
+                `${
+                  download
+                    ? "https://pythonapi.pacificabs.com:5000/"
+                    : "https://pythonapi.pacificabs.com:5001/"
+                }` + src
+              }
               alt="Large view"
               style={{
                 maxWidth: "100%",
