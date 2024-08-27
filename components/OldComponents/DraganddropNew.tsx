@@ -186,7 +186,7 @@ const DraganddropNew: React.FC<DragAndDropProps> = ({
         ))}
       </div>
 
-      {modalImageSrc && (
+      {/* {modalImageSrc && (
         <LargeImageModal
           open={modalOpen}
           src={modalImageSrc}
@@ -195,7 +195,7 @@ const DraganddropNew: React.FC<DragAndDropProps> = ({
           onMove={handleMove}
           onDelete={handleDelete}
         />
-      )}
+      )} */}
     </DndProvider>
   );
 };

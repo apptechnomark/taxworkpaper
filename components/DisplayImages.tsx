@@ -10,17 +10,25 @@ interface FileData {
 
 interface DisplayImagesProps {
   fileData: FileData[];
+  download: boolean;
 }
 
 interface ImageProps {
   src: string;
+  download: boolean;
 }
 
-const Image: React.FC<ImageProps> = ({ src }) => {
+const Image: React.FC<ImageProps> = ({ src, download }) => {
   return (
     <img
       alt=""
-      src={"https://pythonapi.pacificabs.com:5000/" + src}
+      src={
+        `${
+          download
+            ? "https://pythonapi.pacificabs.com:5000/"
+            : "https://pythonapi.pacificabs.com:5001/"
+        }` + src
+      }
       width="100"
       height="600"
       style={{ opacity: 1, cursor: "pointer" }}
@@ -45,7 +53,10 @@ const DropTarget: React.FC<{
   );
 };
 
-const DisplayImages: React.FC<DisplayImagesProps> = ({ fileData }) => {
+const DisplayImages: React.FC<DisplayImagesProps> = ({
+  fileData,
+  download,
+}) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalImageSrc, setModalImageSrc] = useState<string | null>(null);
 
@@ -78,7 +89,7 @@ const DisplayImages: React.FC<DisplayImagesProps> = ({ fileData }) => {
                   (src, index) =>
                     src && (
                       <div onClick={() => openImageModal(src)} key={src}>
-                        <Image src={src} />
+                        <Image src={src} download={download} />
                       </div>
                     )
                 )
@@ -93,6 +104,7 @@ const DisplayImages: React.FC<DisplayImagesProps> = ({ fileData }) => {
           open={modalOpen}
           src={modalImageSrc}
           onClose={closeImageModal}
+          download={download}
         />
       )}
     </>
