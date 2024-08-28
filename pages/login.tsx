@@ -1,14 +1,11 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
 import Image from "next/image";
 import { Button, TextField } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import Spinner from "tsconfig.json/components/Spinner`";
-import { callAPI } from "tsconfig.json/utils/API/callAPI`";
 import { hasToken } from "tsconfig.json/utils/commonFunction`";
 import Pabs from "tsconfig.json/assets/icons/Pabs`";
 
@@ -63,26 +60,6 @@ const login = () => {
       //   Username: email,
       //   Password: password,
       // };
-      // const url = `${process.env.api_url}/auth/token`;
-      // const successCallback = (
-      //   ResponseData: Token,
-      //   error: boolean,
-      //   ResponseStatus: string
-      // ) => {
-      //   if (ResponseStatus === "Success" && error === false) {
-      //     toast.success("You are successfully logged in.");
-      //     setEmail("");
-      //     setEmailError(false);
-      //     setPassword("");
-      //     setPasswordError(false);
-      //     localStorage.setItem("token", ResponseData.Token.Token);
-      //     router.push("/");
-      //     setClicked(false);
-      //   } else {
-      //     setClicked(false);
-      //   }
-      // };
-      // callAPI(url, params, successCallback, "POST");
     } else {
       setClicked(false);
     }

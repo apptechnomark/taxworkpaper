@@ -10,22 +10,16 @@ import {
   TextField,
   Tooltip,
 } from "@mui/material";
+import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 interface LabelValue {
   label: string;
   value: string;
 }
 
-interface FormData {
-  id: string;
-  form: string;
-  fieldName: string;
-  color: string;
-  comments: string;
-}
-
-const FormDrawer = ({ onOpen, onClose, editId, data, setData }: any) => {
+const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
   const [formType, setFormType] = useState("");
   const [formDropdownData, setFormDropdownData] = useState([
     { label: "W2", value: "W2" },
@@ -67,17 +61,33 @@ const FormDrawer = ({ onOpen, onClose, editId, data, setData }: any) => {
   const [selectedColor, setSelectedColor] = useState("");
   const [comment, setComment] = useState("");
 
+  const getById = async () => {
+    try {
+      let response = await axios.get(
+        `https://pythonapi.pacificabs.com:5000/bookmark/${editId}`
+      );
+      console.log(response.data);
+      if (response.status === 200) {
+        setFormType(response.data.bookmark);
+        setFieldName(response.data.strings);
+        setSelectedColor(response.data.colour);
+        setComment(response.data.comments);
+      } else {
+        setFormType("");
+        setFieldName("");
+        setSelectedColor("");
+        setComment("");
+        toast.success("Please try again later.");
+      }
+    } catch (error: any) {
+      toast.success("Please try again later.");
+    }
+  };
+
   useEffect(() => {
     if (editId > 0) {
-      const itemToEdit = data.find((item: any) => item.id == editId.toString());
-      if (itemToEdit) {
-        setFormType(itemToEdit.form);
-        setFieldName(itemToEdit.fieldName);
-        setSelectedColor(itemToEdit.color);
-        setComment(itemToEdit.comments);
-      }
+      getById();
     } else {
-      // Clear the form if editId is not present
       setFormType("");
       setFieldName("");
       setSelectedColor("");
@@ -85,24 +95,29 @@ const FormDrawer = ({ onOpen, onClose, editId, data, setData }: any) => {
     }
   }, [editId]);
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    const formData: FormData = {
-      id: editId > 0 ? editId : `${data.length + 1}`,
-      form: formType,
-      fieldName: fieldName,
-      color: selectedColor,
+    const formData: any = {
+      bookmark: formType,
+      strings: fieldName,
+      colour: selectedColor,
       comments: comment,
     };
-
-    if (editId > 0) {
-      const updatedData = data.map((item: FormData) =>
-        item.id === editId ? formData : item
-      );
-      setData(updatedData);
-    } else {
-      setData([formData, ...data]);
+    const url =
+      editId > 0
+        ? `https://pythonapi.pacificabs.com:5000/update/${editId}`
+        : `https://pythonapi.pacificabs.com:5000/bookmark`;
+    try {
+      let response = await axios.post(url, formData);
+      if (response.status === 200) {
+        getData();
+      } else {
+        getData();
+        toast.success("Please try again later.");
+      }
+    } catch (error: any) {
+      toast.success("Please try again later.");
     }
 
     handleCloseDrawer();

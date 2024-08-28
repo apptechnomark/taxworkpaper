@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { Button } from "@mui/material";
+import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import AddPlusIcon from "tsconfig.json/assets/icons/AddPlusIcon`";
@@ -11,31 +12,33 @@ import { hasNoToken } from "tsconfig.json/utils/commonFunction`";
 
 const setting = () => {
   const router = useRouter();
+  const [loaded, setLoaded] = useState<boolean>(false);
   const [openDrawer, setOpenDrawer] = useState(false);
   const [editId, setEditId] = useState(0);
-  const [data, setData] = useState<any>([
-    {
-      id: "3",
-      form: "W2",
-      fieldName: "1254-F",
-      color: "#0000FF",
-      comments: "",
-    },
-    {
-      id: "2",
-      form: "1099-DIV",
-      fieldName: "773-U",
-      color: "#00FF00",
-      comments: "form changes",
-    },
-    {
-      id: "1",
-      form: "1099-INT",
-      fieldName: "1120",
-      color: "#FF0000",
-      comments: "set color",
-    },
-  ]);
+  const [data, setData] = useState<any>([]);
+
+  const getData = async () => {
+    setLoaded(false);
+    try {
+      let response = await axios.get(
+        `https://pythonapi.pacificabs.com:5000/bookmarks`
+      );
+      if (response.status === 200) {
+        setData(response.data);
+        setLoaded(true);
+      } else {
+        setData([]);
+        setLoaded(true);
+      }
+    } catch (error: any) {
+      setLoaded(true);
+      setData([]);
+    }
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
 
   //   useEffect(() => {
   //     hasNoToken(router);
@@ -70,8 +73,9 @@ const setting = () => {
       </div>
 
       <FormDatatable
+        loaded={loaded}
         data={data}
-        setData={setData}
+        getData={getData}
         setOpenDrawer={setOpenDrawer}
         setEditId={setEditId}
       />
@@ -80,8 +84,7 @@ const setting = () => {
         onOpen={openDrawer}
         onClose={handleDrawerClose}
         editId={editId}
-        data={data}
-        setData={setData}
+        getData={getData}
       />
 
       <DrawerOverlay isOpen={openDrawer} />
