@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Loader from "../common/Loader";
 import { TablePagination, ThemeProvider, Tooltip } from "@mui/material";
 import MUIDataTable from "mui-datatables";
@@ -6,12 +6,12 @@ import { Delete, Edit } from "@mui/icons-material";
 import DeleteDialog from "../common/DeleteDialog";
 import { toast } from "react-toastify";
 import { getMuiTheme } from "tsconfig.json/utils/CommonStyle`";
-import { callAPI } from "tsconfig.json/utils/API/callAPI`";
 import {
   generateCommonBodyRender,
   generateCustomColumn,
   generateCustomHeaderName,
 } from "tsconfig.json/utils/CommonTableFunction`";
+import axios from "axios";
 
 const pageNo = 1;
 const pageSize = 10;
@@ -41,49 +41,21 @@ interface List {
   date: string;
 }
 
-const FormDatatable = ({ data, setData, setOpenDrawer, setEditId }: any) => {
-  const [loaded, setLoaded] = useState<boolean>(true);
+const FormDatatable = ({
+  loaded,
+  data,
+  getData,
+  setOpenDrawer,
+  setEditId,
+}: any) => {
   const [filteredObject, setFilteredOject] = useState<Interface>(initialFilter);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(pageSize);
-  const [tableDataCount, setTableDataCount] = useState(0);
+  const [tableDataCount, setTableDataCount] = useState(
+    !!data ? data.length : 0
+  );
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(0);
-
-  const getFormList = async () => {
-    setLoaded(false);
-    const params = filteredObject;
-    const url = `${process.env.baseURL}/form/getFormList`;
-    const successCallback = (
-      ResponseData: {
-        list: List[];
-        totalCount: number;
-        totalPages: number;
-        currentPage: number;
-      },
-      error: boolean,
-      ResponseStatus: string
-    ) => {
-      if (ResponseStatus === "success" && error === false) {
-        setLoaded(true);
-        setData(ResponseData.list);
-        setTableDataCount(ResponseData.totalCount);
-      } else {
-        setLoaded(true);
-      }
-    };
-    callAPI(url, params, successCallback, "POST");
-  };
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     await getFormList();
-  //   };
-  //   const timer = setTimeout(() => {
-  //     fetchData();
-  //   }, 500);
-  //   return () => clearTimeout(timer);
-  // }, [filteredObject]);
 
   const columnConfig = [
     {
@@ -92,17 +64,17 @@ const FormDatatable = ({ data, setData, setOpenDrawer, setEditId }: any) => {
       bodyRenderer: generateCommonBodyRender,
     },
     {
-      name: "form",
+      name: "bookmark",
       label: "Form Name",
       bodyRenderer: generateCommonBodyRender,
     },
     {
-      name: "fieldName",
+      name: "strings",
       label: "Field Name",
       bodyRenderer: generateCommonBodyRender,
     },
     {
-      name: "color",
+      name: "colour",
       label: "Highlight Color",
       bodyRenderer: generateCommonBodyRender,
     },
@@ -161,7 +133,7 @@ const FormDatatable = ({ data, setData, setOpenDrawer, setEditId }: any) => {
     }
     if (column.label === "Highlight Color") {
       return {
-        name: "color",
+        name: "colour",
         options: {
           filter: true,
           sort: true,
@@ -236,26 +208,24 @@ const FormDatatable = ({ data, setData, setOpenDrawer, setEditId }: any) => {
   };
 
   const deleteData = async () => {
-    const params = {
-      id: deleteId,
-    };
-    const url = `${process.env.baseURL}/form/delete`;
-    const successCallback = (
-      ResponseData: null,
-      error: boolean,
-      ResponseStatus: string
-    ) => {
-      if (ResponseStatus === "success" && error === false) {
+    try {
+      let response = await axios.get(
+        `https://pythonapi.pacificabs.com:5000/delete/${deleteId}`
+      );
+      if (response.status === 200) {
         toast.success("Record has been deleted successfully.");
-        getFormList();
+        getData();
         setDeleteOpen(false);
       } else {
         setDeleteOpen(false);
-        getFormList();
+        getData();
         toast.success("Please try again later.");
       }
-    };
-    callAPI(url, params, successCallback, "POST");
+    } catch (error: any) {
+      setDeleteOpen(false);
+      getData();
+      toast.success("Please try again later.");
+    }
   };
 
   return (
