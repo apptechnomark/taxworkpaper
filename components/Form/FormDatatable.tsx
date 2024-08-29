@@ -266,7 +266,7 @@ const FormDatatable = ({
             }}
             data-tableid="unassignee_Datatable"
           />
-          <TablePagination
+          {/* <TablePagination
             component="div"
             count={tableDataCount}
             page={page}
@@ -287,7 +287,7 @@ const FormDatatable = ({
                 setFilteredOject
               );
             }}
-          />
+          /> */}
         </ThemeProvider>
       ) : (
         <Loader />
