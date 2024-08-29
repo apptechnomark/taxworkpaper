@@ -22,7 +22,7 @@ interface LabelValue {
 const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
   const [formType, setFormType] = useState("");
   const [formDropdownData, setFormDropdownData] = useState([
-    { label: "W2", value: "W2" },
+    { label: "W-2", value: "W-2" },
     { label: "1099-INT", value: "1099-INT" },
     { label: "1099-OID", value: "1099-OID" },
     { label: "1099-DIV", value: "1099-DIV" },
@@ -66,7 +66,6 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
       let response = await axios.get(
         `https://pythonapi.pacificabs.com:5000/bookmark/${editId}`
       );
-      console.log(response.data);
       if (response.status === 200) {
         setFormType(response.data.bookmark);
         setFieldName(response.data.strings);
@@ -201,7 +200,7 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
                     marginLeft: "10px",
                   }}
                 >
-                  {["#FF0000", "#00FF00", "#0000FF"].map((color) => (
+                  {["#FF0000", "#00FF00", "#0000FF", "#FFFF00"].map((color) => (
                     <div
                       key={color}
                       style={{
