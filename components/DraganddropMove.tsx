@@ -65,7 +65,7 @@ const Image: React.FC<ImageProps> = ({
         `${
           download
             ? "https://pythonapi.pacificabs.com:5000/"
-            : "https://pythonapi.pacificabs.com:5000/"
+            : "https://pythonapi.pacificabs.com:5001/"
         }` + src
       }
       width="100"
@@ -158,7 +158,7 @@ const DraganddropMove: React.FC<DragAndDropProps> = ({
     },
     [fileData, setFileData, onDataChange]
   );
-
+  console.log(download);
   const resetPosition = useCallback(
     (bookmarkIndex: number) => {
       setFileData([...fileData]);
