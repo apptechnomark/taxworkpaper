@@ -219,12 +219,12 @@ const FormDatatable = ({
       } else {
         setDeleteOpen(false);
         getData();
-        toast.success("Please try again later.");
+        toast.error("Please try again later.");
       }
     } catch (error: any) {
       setDeleteOpen(false);
       getData();
-      toast.success("Please try again later.");
+      toast.error("Please try again later.");
     }
   };
 

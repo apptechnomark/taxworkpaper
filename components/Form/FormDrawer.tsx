@@ -1,6 +1,7 @@
 import { Close } from "@mui/icons-material";
 import {
   Button,
+  CircularProgress,
   FormControl,
   FormLabel,
   IconButton,
@@ -20,6 +21,7 @@ interface LabelValue {
 }
 
 const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
+  const [loading, setLoading] = useState(false);
   const [formType, setFormType] = useState("");
   const [formDropdownData, setFormDropdownData] = useState([
     { label: "W-2", value: "W-2" },
@@ -76,10 +78,10 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
         setFieldName("");
         setSelectedColor("");
         setComment("");
-        toast.success("Please try again later.");
+        toast.error("Please try again later.");
       }
     } catch (error: any) {
-      toast.success("Please try again later.");
+      toast.error("Please try again later.");
     }
   };
 
@@ -92,34 +94,51 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
       setSelectedColor("");
       setComment("");
     }
-  }, [editId, onOpen]);
+  }, [editId]);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-
-    const formData: any = {
-      bookmark: formType,
-      strings: fieldName,
-      colour: selectedColor,
-      comments: comment,
-    };
-    const url =
-      editId > 0
-        ? `https://pythonapi.pacificabs.com:5000/update/${editId}`
-        : `https://pythonapi.pacificabs.com:5000/bookmark`;
-    try {
-      let response = await axios.post(url, formData);
-      if (response.status === 200) {
-        getData();
-      } else {
-        getData();
-        toast.success("Please try again later.");
+    if (
+      formType.trim().length > 0 ||
+      fieldName.trim().length > 0 ||
+      selectedColor.trim().length > 0 ||
+      comment.trim().length > 0
+    ) {
+      setLoading(true);
+      const formData: any = {
+        bookmark: formType,
+        strings: fieldName,
+        colour: selectedColor,
+        comments: comment,
+      };
+      const url =
+        editId > 0
+          ? `https://pythonapi.pacificabs.com:5000/update/${editId}`
+          : `https://pythonapi.pacificabs.com:5000/bookmark`;
+      try {
+        let response = await axios.post(url, formData);
+        if (response.status === 200) {
+          setLoading(false);
+          getData();
+          toast.success(
+            editId > 0
+              ? "Rule updated successfully."
+              : "Rule added successfully."
+          );
+        } else {
+          setLoading(false);
+          getData();
+          toast.error("Please try again later.");
+        }
+      } catch (error: any) {
+        setLoading(false);
+        toast.error("Please try again later.");
       }
-    } catch (error: any) {
-      toast.success("Please try again later.");
-    }
 
-    handleCloseDrawer();
+      handleCloseDrawer();
+    } else {
+      handleCloseDrawer();
+    }
   };
 
   const handleCloseDrawer = () => {
@@ -237,25 +256,31 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
               />
             </div>
             <div className="sticky bottom-0 !h-[9%] bg-whiteSmoke border-t z-30 border-lightSilver flex py-2 justify-end items-center">
-              <div>
+              <div className="flex items-end justify-center">
                 <Button
                   variant="outlined"
-                  className="rounded-[4px] !h-[36px] !text-defaultRed border-defaultRed"
+                  className="rounded-[4px] !h-[36px] !text-defaultRed border-defaultRed hover:border-defaultRed"
                   onClick={handleCloseDrawer}
                 >
                   <span className="flex items-center justify-center gap-[10px] px-[5px]">
                     Close
                   </span>
                 </Button>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  className="rounded-[4px] !h-[36px] !ml-6 !bg-[#1565C0]"
-                >
-                  <span className="flex items-center justify-center gap-[10px] px-[5px]">
-                    {editId > 0 ? "Save Rule" : "Add Rule"}
-                  </span>
-                </Button>
+                {loading ? (
+                  <div className="!h-[36px] flex items-center justify-center !ml-6 w-[115px] bg-blue-200">
+                    <CircularProgress />
+                  </div>
+                ) : (
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    className="rounded-[4px] !h-[36px] !ml-6 !bg-[#1565C0]"
+                  >
+                    <span className="flex items-center justify-center gap-[10px] px-[5px]">
+                      {editId > 0 ? "Save Rule" : "Add Rule"}
+                    </span>
+                  </Button>
+                )}
               </div>
             </div>
           </form>
