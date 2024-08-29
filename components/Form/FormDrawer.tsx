@@ -92,7 +92,7 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
       setSelectedColor("");
       setComment("");
     }
-  }, [editId]);
+  }, [editId, onOpen]);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -149,7 +149,7 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
             </Tooltip>
           </div>
         </div>
-        <div className={`${editId > 0 && "overflow-y-scroll"} !h-[91%]`}>
+        <div className={`!h-[91%]`}>
           <form
             onSubmit={handleSubmit}
             className="flex flex-col justify-between h-full pt-3 px-3"
