@@ -267,7 +267,7 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
                   </span>
                 </Button>
                 {loading ? (
-                  <div className="!h-[36px] flex items-center justify-center !ml-6 w-[115px] bg-blue-200">
+                  <div className="!h-[36px] flex items-center justify-center !ml-6 px-[41.5px]">
                     <CircularProgress />
                   </div>
                 ) : (
