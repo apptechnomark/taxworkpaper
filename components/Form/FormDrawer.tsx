@@ -117,7 +117,7 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
           : `https://pythonapi.pacificabs.com:5000/bookmark`;
       try {
         let response = await axios.post(url, formData);
-        if (response.status === 200) {
+        if (response.status === 200 || response.status === 201) {
           setLoading(false);
           getData();
           toast.success(
@@ -267,7 +267,8 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
                   </span>
                 </Button>
                 {loading ? (
-                  <div className="!h-[36px] flex items-center justify-center !ml-6 px-[41.5px]">
+                  <div className="!h-[36px] flex items-center justify-center !ml-6">
+                    {/* px-[41.5px] */}
                     <CircularProgress />
                   </div>
                 ) : (
