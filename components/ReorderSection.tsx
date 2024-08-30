@@ -198,9 +198,11 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
         }
       } else {
         toast.error("Please try again later.");
+        setDownloadLoader(false);
       }
     } catch (error) {
       toast.error("Error exporting data.");
+      setDownloadLoader(false);
     }
   };
 
