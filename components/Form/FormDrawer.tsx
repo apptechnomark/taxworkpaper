@@ -209,7 +209,7 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
                 error={formTypeError}
               >
                 <InputLabel id="form-type-label">
-                  Select Form Name
+                  Form Name
                   <span className="!text-defaultRed">&nbsp;*</span>
                 </InputLabel>
                 <Select
@@ -235,7 +235,7 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
                   ))}
                 </Select>
                 {formTypeError && (
-                  <FormHelperText>This is a required field.</FormHelperText>
+                  <FormHelperText>Field Name is required.</FormHelperText>
                 )}
               </FormControl>
               <TextField
