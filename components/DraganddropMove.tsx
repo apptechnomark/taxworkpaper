@@ -158,7 +158,7 @@ const DraganddropMove: React.FC<DragAndDropProps> = ({
     },
     [fileData, setFileData, onDataChange]
   );
-  console.log(download);
+
   const resetPosition = useCallback(
     (bookmarkIndex: number) => {
       setFileData([...fileData]);

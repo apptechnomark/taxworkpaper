@@ -125,6 +125,7 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
         setPreviewButtonDisabled(false);
         setDownloadButtonDisabled(false);
         setData(response.data);
+        setFileData(response.data.bookmark_detail);
         setPreviewFile(response.data.preview_pdf);
         setDownloadFile(response.data.meta_folder);
         setDisabled(false);
