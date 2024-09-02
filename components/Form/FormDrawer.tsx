@@ -3,6 +3,7 @@ import {
   Button,
   CircularProgress,
   FormControl,
+  FormHelperText,
   FormLabel,
   IconButton,
   InputLabel,
@@ -14,6 +15,8 @@ import {
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import DrawerOverlay from "../common/DrawerOverlay";
+import Loader from "../common/Loader";
 
 interface LabelValue {
   label: string;
@@ -23,6 +26,7 @@ interface LabelValue {
 const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
   const [loading, setLoading] = useState(false);
   const [formType, setFormType] = useState("");
+  const [formTypeError, setFormTypeError] = useState(false);
   const [formDropdownData, setFormDropdownData] = useState([
     { label: "W-2", value: "W-2" },
     { label: "1099-INT", value: "1099-INT" },
@@ -60,7 +64,9 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
     { label: "CRP", value: "CRP" },
   ]);
   const [fieldName, setFieldName] = useState("");
+  const [fieldNameError, setFieldNameError] = useState(false);
   const [selectedColor, setSelectedColor] = useState("");
+  const [selectedColorError, setSelectedColorError] = useState(false);
   const [comment, setComment] = useState("");
 
   const getById = async () => {
@@ -74,10 +80,7 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
         setSelectedColor(response.data.colour);
         setComment(response.data.comments);
       } else {
-        setFormType("");
-        setFieldName("");
-        setSelectedColor("");
-        setComment("");
+        clearForm();
         toast.error("Please try again later.");
       }
     } catch (error: any) {
@@ -89,23 +92,52 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
     if (editId > 0) {
       getById();
     } else {
-      setFormType("");
-      setFieldName("");
-      setSelectedColor("");
-      setComment("");
+      clearForm();
     }
   }, [editId]);
 
+  const clearForm = () => {
+    setFormType("");
+    setFormTypeError(false);
+    setFieldName("");
+    setFieldNameError(false);
+    setSelectedColor("");
+    setSelectedColorError(false);
+    setComment("");
+  };
+
+  const validateForm = () => {
+    let isValid = true;
+
+    if (formType.trim().length === 0) {
+      setFormTypeError(true);
+      isValid = false;
+    } else {
+      setFormTypeError(false);
+    }
+
+    if (fieldName.trim().length === 0) {
+      setFieldNameError(true);
+      isValid = false;
+    } else {
+      setFieldNameError(false);
+    }
+
+    if (selectedColor.trim().length === 0) {
+      setSelectedColorError(true);
+      isValid = false;
+    } else {
+      setSelectedColorError(false);
+    }
+
+    return isValid;
+  };
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    if (
-      formType.trim().length > 0 ||
-      fieldName.trim().length > 0 ||
-      selectedColor.trim().length > 0 ||
-      comment.trim().length > 0
-    ) {
+    if (validateForm()) {
       setLoading(true);
-      const formData: any = {
+      const formData = {
         bookmark: formType,
         strings: fieldName,
         colour: selectedColor,
@@ -115,6 +147,7 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
         editId > 0
           ? `https://pythonapi.pacificabs.com:5000/update/${editId}`
           : `https://pythonapi.pacificabs.com:5000/bookmark`;
+
       try {
         let response = await axios.post(url, formData);
         if (response.status === 200 || response.status === 201) {
@@ -127,7 +160,6 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
           );
         } else {
           setLoading(false);
-          getData();
           toast.error("Please try again later.");
         }
       } catch (error: any) {
@@ -136,23 +168,20 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
       }
 
       handleCloseDrawer();
-    } else {
-      handleCloseDrawer();
     }
   };
 
   const handleCloseDrawer = () => {
-    setFormType("");
-    setFieldName("");
-    setSelectedColor("");
-    setComment("");
-
+    clearForm();
     onClose();
   };
+
   return (
     <>
       <div
-        className={`fixed top-0 right-0 z-30 h-screen overflow-y-auto w-[600px] border border-lightSilver bg-pureWhite transform  ${
+        className={`fixed top-0 right-0 z-30 h-screen ${
+          loading ? "overflow-y-hidden" : "overflow-y-auto"
+        } w-[600px] border border-lightSilver bg-pureWhite transform  ${
           onOpen ? "translate-x-0" : "translate-x-full"
         } transition-transform duration-300 ease-in-out bg-white`}
       >
@@ -174,16 +203,29 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
             className="flex flex-col justify-between h-full pt-3 px-3"
           >
             <div>
-              <FormControl variant="standard" sx={{ width: "98%" }}>
-                <InputLabel id="demo-simple-select-standard-label">
+              <FormControl
+                variant="standard"
+                sx={{ width: "98%" }}
+                error={formTypeError}
+              >
+                <InputLabel id="form-type-label">
                   Select Form Name
+                  <span className="!text-defaultRed">&nbsp;*</span>
                 </InputLabel>
                 <Select
-                  labelId="demo-simple-select-standard-label"
-                  id="demo-simple-select-standard"
+                  labelId="form-type-label"
+                  id="form-type"
                   value={formType}
                   onChange={(e) => {
                     setFormType(e.target.value);
+                    setFormTypeError(false);
+                  }}
+                  onBlur={() => {
+                    if (formType.trim().length > 0) {
+                      setFormTypeError(false);
+                    } else {
+                      setFormTypeError(true);
+                    }
                   }}
                 >
                   {formDropdownData.map((i: LabelValue, index: number) => (
@@ -192,25 +234,44 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
                     </MenuItem>
                   ))}
                 </Select>
+                {formTypeError && (
+                  <FormHelperText>This is a required field.</FormHelperText>
+                )}
               </FormControl>
               <TextField
                 label={
                   <span>
                     Field Name
-                    {/* <span className="!text-defaultRed">&nbsp;*</span> */}
+                    <span className="!text-defaultRed">&nbsp;*</span>
                   </span>
                 }
                 fullWidth
-                value={fieldName?.trim().length <= 0 ? "" : fieldName}
+                value={fieldName}
                 onChange={(e) => {
                   setFieldName(e.target.value);
+                  setFieldNameError(false);
+                }}
+                onBlur={() => {
+                  if (fieldName.trim().length > 0) {
+                    setFieldNameError(false);
+                  } else {
+                    setFieldNameError(true);
+                  }
                 }}
                 margin="normal"
                 variant="standard"
                 sx={{ width: "98%" }}
+                error={fieldNameError}
+                helperText={fieldNameError ? "Field Name is required." : ""}
               />
               <div style={{ marginTop: "16px", width: "98%" }}>
-                <FormLabel component="legend">Highlight Color</FormLabel>
+                <FormLabel
+                  component="legend"
+                  className={selectedColorError ? "text-defaultRed" : ""}
+                >
+                  Highlight Color
+                  <span className="!text-defaultRed">&nbsp;*</span>
+                </FormLabel>
                 <div
                   style={{
                     display: "flex",
@@ -233,20 +294,23 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
                         borderRadius: "4px",
                         marginRight: "10px",
                       }}
-                      onClick={() => setSelectedColor(color)}
+                      onClick={() => {
+                        setSelectedColor(color);
+                        setSelectedColorError(false);
+                      }}
                     />
                   ))}
                 </div>
+                {selectedColorError && (
+                  <FormHelperText error>
+                    Highlight Color is required.
+                  </FormHelperText>
+                )}
               </div>
               <TextField
-                label={
-                  <span>
-                    Comment
-                    {/* <span className="!text-defaultRed">&nbsp;*</span> */}
-                  </span>
-                }
+                label="Comment"
                 fullWidth
-                value={comment?.trim().length <= 0 ? "" : comment}
+                value={comment}
                 onChange={(e) => {
                   setComment(e.target.value);
                 }}
@@ -266,26 +330,20 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
                     Close
                   </span>
                 </Button>
-                {loading ? (
-                  <div className="!h-[36px] flex items-center justify-center !ml-6">
-                    {/* px-[41.5px] */}
-                    <CircularProgress />
-                  </div>
-                ) : (
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    className="rounded-[4px] !h-[36px] !ml-6 !bg-[#1565C0]"
-                  >
-                    <span className="flex items-center justify-center gap-[10px] px-[5px]">
-                      {editId > 0 ? "Save Rule" : "Add Rule"}
-                    </span>
-                  </Button>
-                )}
+                <Button
+                  type="submit"
+                  variant="contained"
+                  className="rounded-[4px] !h-[36px] !ml-6 !bg-[#1565C0]"
+                >
+                  <span className="flex items-center justify-center gap-[10px] px-[5px]">
+                    {editId > 0 ? "Save Rule" : "Add Rule"}
+                  </span>
+                </Button>
               </div>
             </div>
           </form>
         </div>
+        {loading && <Loader />}
       </div>
     </>
   );
