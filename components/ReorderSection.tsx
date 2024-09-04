@@ -70,7 +70,7 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
   const [previewFile, setPreviewFile] = useState("");
   const [downloadFile, setDownloadFile] = useState("");
   const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
-  const [downloadType, setDownloadType] = useState(1);
+  const [downloadType, setDownloadType] = useState(0);
   const [downloadLoader, setDownloadLoader] = useState(false);
 
   useEffect(() => {
@@ -96,7 +96,8 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
 
   useEffect(() => {
     setSaveButtonDisabled(true);
-    handleSave(false);
+    downloadType === 0 && setDisabled(false);
+    downloadType > 0 && handleSave(false);
   }, [downloadType]);
 
   const handleSave = async (save: boolean) => {
@@ -216,7 +217,7 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
       setSaveButtonDisabled(true);
     }
   }, [changesMade]);
-
+  console.log(downloadType, previewButtonDisabled || downloadType <= 0);
   return (
     <>
       {disabled ? (
@@ -262,7 +263,11 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
                             onChange={(e) =>
                               setDownloadType(Number(e.target.value))
                             }
+                            placeholder="Select Download Type"
                           >
+                            <MenuItem value={0} disabled>
+                              Select Download Type
+                            </MenuItem>
                             <MenuItem value={1}>Default</MenuItem>
                             <MenuItem value={2}>UltraTax</MenuItem>
                             <MenuItem value={3}>Pro-Conect</MenuItem>
@@ -271,25 +276,25 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
                         </FormControl>
                         <button
                           className={`flex gap-[15px] bg-[#1492C8] text-white text-sm font-semibold px-4 py-2 rounded-md ${
-                            saveButtonDisabled
+                            saveButtonDisabled || downloadType <= 0
                               ? "cursor-not-allowed opacity-50"
                               : ""
                           }`}
                           onClick={() =>
                             saveButtonDisabled ? undefined : handleSave(true)
                           }
-                          disabled={saveButtonDisabled}
+                          disabled={saveButtonDisabled || downloadType <= 0}
                         >
                           Save
                         </button>
                         <button
                           // className="flex gap-[15px] bg-[#259916] text-white text-sm font-semibold px-4 py-2 rounded-md"
                           className={`flex gap-[15px] bg-[#259916] text-white text-sm font-semibold px-4 py-2 rounded-md ${
-                            previewButtonDisabled
+                            previewButtonDisabled || downloadType <= 0
                               ? "cursor-not-allowed opacity-50"
                               : ""
                           }`}
-                          disabled={previewButtonDisabled}
+                          disabled={previewButtonDisabled || downloadType <= 0}
                         >
                           {previewButtonDisabled ? (
                             "Preview"
@@ -301,12 +306,12 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
                         </button>
                         <button
                           className={`flex gap-[15px] bg-[#259916] text-white text-sm font-semibold px-4 py-2 rounded-md ${
-                            downloadButtonDisabled
+                            downloadButtonDisabled || downloadType <= 0
                               ? "cursor-not-allowed opacity-50"
                               : ""
                           }`}
                           onClick={() => setDownloadDialogOpen(true)}
-                          disabled={downloadButtonDisabled}
+                          disabled={downloadButtonDisabled || downloadType <= 0}
                         >
                           Download
                         </button>
