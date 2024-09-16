@@ -1,7 +1,6 @@
 import { Close } from "@mui/icons-material";
 import {
   Button,
-  CircularProgress,
   FormControl,
   FormHelperText,
   FormLabel,
@@ -15,7 +14,6 @@ import {
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import DrawerOverlay from "../common/DrawerOverlay";
 import Loader from "../common/Loader";
 
 interface LabelValue {
@@ -60,6 +58,8 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
     { label: "1099-HC", value: "1099-HC" },
     { label: "CRP", value: "CRP" },
   ]);
+  const [cpaName, setCPAName] = useState("");
+  const [cpaError, setCPAError] = useState(false);
   const [fieldName, setFieldName] = useState("");
   const [fieldNameError, setFieldNameError] = useState(false);
   const [selectedColor, setSelectedColor] = useState("");
@@ -69,9 +69,10 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
   const getById = async () => {
     try {
       let response = await axios.get(
-        `https://pythonapi.pacificabs.com:5000/bookmark/${editId}`
+        `https://pythonapi.pacificabs.com:5001/bookmark/${editId}`
       );
       if (response.status === 200) {
+        setCPAName(response.data.cpatype);
         setFormType(response.data.bookmark);
         setFieldName(response.data.strings);
         setSelectedColor(response.data.colour);
@@ -94,6 +95,8 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
   }, [editId]);
 
   const clearForm = () => {
+    setCPAName("");
+    setCPAError(false);
     setFormType("");
     setFormTypeError(false);
     setFieldName("");
@@ -105,6 +108,13 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
 
   const validateForm = () => {
     let isValid = true;
+
+    if (cpaName.trim().length === 0) {
+      setCPAError(true);
+      isValid = false;
+    } else {
+      setCPAError(false);
+    }
 
     if (formType.trim().length === 0) {
       setFormTypeError(true);
@@ -135,6 +145,7 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
     if (validateForm()) {
       setLoading(true);
       const formData = {
+        cpatype: cpaName,
         bookmark: formType,
         strings: fieldName,
         colour: selectedColor,
@@ -142,8 +153,8 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
       };
       const url =
         editId > 0
-          ? `https://pythonapi.pacificabs.com:5000/update/${editId}`
-          : `https://pythonapi.pacificabs.com:5000/bookmark`;
+          ? `https://pythonapi.pacificabs.com:5001/update/${editId}`
+          : `https://pythonapi.pacificabs.com:5001/bookmark`;
 
       try {
         let response = await axios.post(url, formData);
@@ -206,6 +217,40 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
                 error={formTypeError}
               >
                 <InputLabel id="form-type-label">
+                  CPA Type
+                  <span className="!text-defaultRed">&nbsp;*</span>
+                </InputLabel>
+                <Select
+                  labelId="form-type-label"
+                  id="form-type"
+                  value={cpaName}
+                  onChange={(e) => {
+                    setCPAName(e.target.value);
+                    setCPAError(false);
+                  }}
+                  onBlur={() => {
+                    if (cpaName.trim().length > 0) {
+                      setCPAError(false);
+                    } else {
+                      setCPAError(true);
+                    }
+                  }}
+                >
+                  <MenuItem value="Default">Default</MenuItem>
+                  <MenuItem value="UltraTax">UltraTax</MenuItem>
+                  <MenuItem value="Pro-Conect">Pro-Conect</MenuItem>
+                  <MenuItem value="Pro-Series">Pro-Series</MenuItem>
+                </Select>
+                {cpaError && (
+                  <FormHelperText>CPA Type is required.</FormHelperText>
+                )}
+              </FormControl>
+              <FormControl
+                variant="standard"
+                sx={{ marginTop: "16px", width: "98%" }}
+                error={formTypeError}
+              >
+                <InputLabel id="form-type-label">
                   Form Name
                   <span className="!text-defaultRed">&nbsp;*</span>
                 </InputLabel>
@@ -232,7 +277,7 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
                   ))}
                 </Select>
                 {formTypeError && (
-                  <FormHelperText>Field Name is required.</FormHelperText>
+                  <FormHelperText>Form Name is required.</FormHelperText>
                 )}
               </FormControl>
               <TextField

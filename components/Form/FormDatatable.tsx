@@ -58,9 +58,14 @@ const FormDatatable = ({
   const [deleteId, setDeleteId] = useState(0);
 
   const columnConfig = [
+    // {
+    //   name: "id",
+    //   label: "ID",
+    //   bodyRenderer: generateCommonBodyRender,
+    // },
     {
-      name: "id",
-      label: "ID",
+      name: "cpatype",
+      label: "CPA Type",
       bodyRenderer: generateCommonBodyRender,
     },
     {
