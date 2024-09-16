@@ -214,10 +214,10 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
               <FormControl
                 variant="standard"
                 sx={{ width: "98%" }}
-                error={formTypeError}
+                error={cpaError}
               >
                 <InputLabel id="form-type-label">
-                  CPA Type
+                  Software Name
                   <span className="!text-defaultRed">&nbsp;*</span>
                 </InputLabel>
                 <Select
@@ -242,7 +242,7 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
                   <MenuItem value="Pro-Series">Pro-Series</MenuItem>
                 </Select>
                 {cpaError && (
-                  <FormHelperText>CPA Type is required.</FormHelperText>
+                  <FormHelperText>Software Name is required.</FormHelperText>
                 )}
               </FormControl>
               <FormControl
