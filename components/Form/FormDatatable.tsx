@@ -215,7 +215,7 @@ const FormDatatable = ({
   const deleteData = async () => {
     try {
       let response = await axios.get(
-        `https://pythonapi.pacificabs.com:5000/delete/${deleteId}`
+        `https://pythonapi.pacificabs.com:5001/delete/${deleteId}`
       );
       if (response.status === 200) {
         toast.success("Record has been deleted successfully.");
