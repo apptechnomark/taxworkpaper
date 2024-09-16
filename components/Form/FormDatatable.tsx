@@ -65,7 +65,7 @@ const FormDatatable = ({
     // },
     {
       name: "cpatype",
-      label: "CPA Type",
+      label: "Software Name",
       bodyRenderer: generateCommonBodyRender,
     },
     {
