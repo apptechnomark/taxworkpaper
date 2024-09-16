@@ -1,7 +1,6 @@
 import { Close } from "@mui/icons-material";
 import {
   Button,
-  CircularProgress,
   FormControl,
   FormHelperText,
   FormLabel,
@@ -15,7 +14,6 @@ import {
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import DrawerOverlay from "../common/DrawerOverlay";
 import Loader from "../common/Loader";
 
 interface LabelValue {
@@ -232,7 +230,7 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
                   ))}
                 </Select>
                 {formTypeError && (
-                  <FormHelperText>Field Name is required.</FormHelperText>
+                  <FormHelperText>Form Name is required.</FormHelperText>
                 )}
               </FormControl>
               <TextField
