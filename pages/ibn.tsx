@@ -105,6 +105,7 @@ const IndexBookMarking = () => {
             fileName={fileName}
             setFileUploaded={setFileUploaded}
             download={false}
+            isDownloadVisible={true}
           />
         ) : (
           <UploadSection
