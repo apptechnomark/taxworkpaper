@@ -38,7 +38,6 @@ interface ReorderSectionProps {
   fileName: string | null;
   setFileUploaded: any;
   download: boolean;
-  isDownloadVisible: boolean;
 }
 
 interface BookmarkDetail {
@@ -60,7 +59,6 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
   fileName,
   setFileUploaded,
   download,
-  isDownloadVisible,
 }) => {
   const warnedRef = useRef(false);
   const [disabled, setDisabled] = useState(true);
@@ -306,21 +304,17 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
                             </a>
                           )}
                         </button>
-                        {isDownloadVisible && (
-                          <button
-                            className={`flex gap-[15px] bg-[#259916] text-white text-sm font-semibold px-4 py-2 rounded-md ${
-                              downloadButtonDisabled || downloadType <= 0
-                                ? "cursor-not-allowed opacity-50"
-                                : ""
-                            }`}
-                            onClick={() => setDownloadDialogOpen(true)}
-                            disabled={
-                              downloadButtonDisabled || downloadType <= 0
-                            }
-                          >
-                            Download
-                          </button>
-                        )}
+                        <button
+                          className={`flex gap-[15px] bg-[#259916] text-white text-sm font-semibold px-4 py-2 rounded-md ${
+                            downloadButtonDisabled || downloadType <= 0
+                              ? "cursor-not-allowed opacity-50"
+                              : ""
+                          }`}
+                          onClick={() => setDownloadDialogOpen(true)}
+                          disabled={downloadButtonDisabled || downloadType <= 0}
+                        >
+                          Download
+                        </button>
                       </div>
                     </th>
                   </tr>
