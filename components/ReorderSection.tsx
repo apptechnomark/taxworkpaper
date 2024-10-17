@@ -203,6 +203,7 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
         setDownloadLoader(false);
       }
     } catch (error) {
+      console.log("error: ", error)
       toast.error("Error exporting data.");
       setDownloadLoader(false);
     }
