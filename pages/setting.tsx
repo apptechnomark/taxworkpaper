@@ -70,10 +70,10 @@ const setting = () => {
   };
 
   const handleDownload = () => {
-    const fileUrl = "/sample-file.pdf";
+    const fileUrl = "/sample-file.xlsx";
     const link = document.createElement("a");
     link.href = fileUrl;
-    link.download = "sample-file.pdf";
+    link.download = "sample-file.xlsx";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -199,14 +199,14 @@ const setting = () => {
         open={openPopup}
         onClose={handlePopupClose}
         fullWidth
-        maxWidth="sm"
+        maxWidth="md"
       >
         <DialogTitle className="mt-2 border-b">
           Choose an Option to Upload
         </DialogTitle>
         <DialogContent>
           <div className="flex items-center justify-start gap-5 my-10">
-            {["Default", "UltraTax", "Pro-Conect", "Pro-Series"].map(
+            {["Default", "UltraTax", "Pro-Conect", "Pro-Series", "Drake"].map(
               (buttonIndex, index) => (
                 <Button
                   key={index}
@@ -218,7 +218,9 @@ const setting = () => {
                       ? "!bg-[#594b25]"
                       : index === 2
                       ? "!bg-[#435925]"
-                      : "!bg-[#571131]"
+                      : index === 3
+                      ? "!bg-[#571131]"
+                      : "!bg-[#919033]"
                   }`}
                   onClick={() => {
                     triggerFileInput();

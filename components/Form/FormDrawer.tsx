@@ -240,6 +240,7 @@ const FormDrawer = ({ onOpen, onClose, editId, getData }: any) => {
                   <MenuItem value="UltraTax">UltraTax</MenuItem>
                   <MenuItem value="Pro-Conect">Pro-Conect</MenuItem>
                   <MenuItem value="Pro-Series">Pro-Series</MenuItem>
+                  <MenuItem value="Drake">Drake</MenuItem>
                 </Select>
                 {cpaError && (
                   <FormHelperText>Software Name is required.</FormHelperText>
