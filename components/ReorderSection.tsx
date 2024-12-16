@@ -106,7 +106,7 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
       let response = await axios.post(
         `${
           download
-            ? "https://pythonapi.pacificabs.com:5000"
+            ? "https://ibapi.pacificabs.com:5000"
             : "https://pythonapi.pacificabs.com:5001"
         }/re_arrange_pdf`,
         {
@@ -162,7 +162,7 @@ const ReorderSection: React.FC<ReorderSectionProps> = ({
       const response = await axios.get(
         `${
           download
-            ? "https://pythonapi.pacificabs.com:5000"
+            ? "https://ibapi.pacificabs.com:5000"
             : "https://pythonapi.pacificabs.com:5001"
         }/download_pdf`,
         {

@@ -41,7 +41,7 @@ const setting = () => {
     setLoaded(false);
     try {
       let response = await axios.get(
-        `https://pythonapi.pacificabs.com:5000/bookmarks`
+        `https://ibapi.pacificabs.com:5000/bookmarks`
       );
       if (response.status === 200) {
         setData(response.data);
@@ -109,7 +109,7 @@ const setting = () => {
           formData.append("cpa_type", selected);
 
           let response = await axios.post(
-            `https://pythonapi.pacificabs.com:5000/bulk_upload`,
+            `https://ibapi.pacificabs.com:5000/bulk_upload`,
             formData
           );
           if (response.status === 200) {

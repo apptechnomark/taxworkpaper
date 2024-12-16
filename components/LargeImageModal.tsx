@@ -80,7 +80,7 @@ const LargeImageModal: React.FC<LargeImageModalProps> = ({
               src={
                 `${
                   download
-                    ? "https://pythonapi.pacificabs.com:5000/"
+                    ? "https://ibapi.pacificabs.com:5000/"
                     : "https://pythonapi.pacificabs.com:5001/"
                 }` + src
               }

@@ -64,7 +64,7 @@ const Image: React.FC<ImageProps> = ({
       src={
         `${
           download
-            ? "https://pythonapi.pacificabs.com:5000/"
+            ? "https://ibapi.pacificabs.com:5000/"
             : "https://pythonapi.pacificabs.com:5001/"
         }` + src
       }

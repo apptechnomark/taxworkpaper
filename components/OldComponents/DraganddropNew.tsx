@@ -169,7 +169,7 @@ const DraganddropNew: React.FC<DragAndDropProps> = ({
                 {file.pdf.map((pdfUrl, pdfIndex) => (
                   <PdfItem
                     key={pdfIndex}
-                    pdfUrl={"https://pythonapi.pacificabs.com:5000/" + pdfUrl}
+                    pdfUrl={"https://ibapi.pacificabs.com:5000/" + pdfUrl}
                     index={pdfIndex}
                     bookmarkIndex={bookmarkIndex}
                     movePdf={movePdf}

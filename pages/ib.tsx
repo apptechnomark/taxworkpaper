@@ -70,7 +70,7 @@ const IndexBookMarking = () => {
     body.append("file", image);
     try {
       let response = await axios.post(
-        `https://pythonapi.pacificabs.com:5000/process_pdf`,
+        `https://ibapi.pacificabs.com:5000/process_pdf`,
         body
       );
       if (response.status === 200) {
